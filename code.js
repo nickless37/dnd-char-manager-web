@@ -15,110 +15,151 @@ function loadFromStorage() {
     items.push(...parsed);
 }
 
-function createCharacter(name) {
+function createCharacter(name) {  //---создать основу 
     return {
-      name: name,
-      cop: 0,
-      sil: 0,
-      gol: 0,
-      pla: 0
+        id: crypto.randomUUID(),
+        name,
+        cop: 0,
+        sil: 0,
+        gol: 0,
+        pla: 0
     };
 }
 
-function deleteCharacter(name){
-    const ok = confirm(`Удалить персонажа "${name}"?`);
-    if (!ok) return;
+function createCharacterElement(item) {  //---дополнить
+    const char = document.createElement("div");
+    char.classList.add("accordion-item");
+    char.dataset.id = item.id; 
+  
+    const header = document.createElement("h2");
+    header.classList.add("accordion-header");
+  
+    const button = document.createElement("button");
+    button.classList.add("accordion-button", "collapsed");
+    button.setAttribute("data-bs-toggle", "collapse");
+    button.setAttribute("data-bs-target", `#collapse-${item.id}`);
+    button.textContent = item.name;
+  
+    header.appendChild(button);
+  
+    const bodyWrap = document.createElement("div");
+    bodyWrap.id = `collapse-${item.id}`;
+    bodyWrap.classList.add("accordion-collapse", "collapse");
+  
+    const body = document.createElement("div");
+    body.classList.add("accordion-body");
+  
+    body.innerHTML = `
+      Медные: <span class="cop"></span><br>
+      Серебро: <span class="sil"></span><br>
+      Золото: <span class="gol"></span><br>
+      Платина: <span class="pla"></span>
+      <br><br>
+      <button class="btn btn-danger btn-sm">Удалить</button>
+    `;
+  
+    bodyWrap.appendChild(body);
+    char.appendChild(header);
+    char.appendChild(bodyWrap);
+  
+    body.querySelector("button").onclick = () => {
+      deleteCharacter(item.id);
+    };
+  
+    updateCharacterView(item);
+    return char;
+  }
 
-    const index = items.findIndex(item => item.name === name);
+  function updateCharacterView(item) {  //---обновить
+    const char = document.querySelector(`[data-id="${item.id}"]`);
+    if (!char) return;
+  
+    char.querySelector(".cop").textContent = item.cop;
+    char.querySelector(".sil").textContent = item.sil;
+    char.querySelector(".gol").textContent = item.gol;
+    char.querySelector(".pla").textContent = item.pla;
+ }
+
+ function deleteCharacter(id) {  //---удалить
+    const index = items.findIndex(i => i.id === id);
     if (index === -1) return;
-    
+  
     items.splice(index, 1);
     saveToStorage();
-    render();  
+  
+    document.querySelector(`[data-id="${id}"]`)?.remove();
+
 }
 
-function render() {
+function init() {  //---рендеринг
+    loadFromStorage();
     const container = document.getElementById("items");
-    container.innerHTML = "";
-    container.classList.add("accordion")
+    container.classList.add("accordion");
   
     for (const item of items) {
-        // блоки персонажа
-        const char = document.createElement("div")
-        char.classList.add("accordion-item")
-        const nametag = document.createElement("div");
-        nametag.classList.add( "mt-1","pb-2")
-        const coins = document.createElement("div");
-        coins.classList.add("border", "mt-3", "mb-3","me-3")
-        const AcButton = document.createElement("button"); 
-        AcButton.classList.add("accordion-button")
+      container.appendChild(createCharacterElement(item));
+    }
+  }
 
-        // имя
-        const name =document.createElement("span");
 
-        name.textContent = 
-            `${item.name}:`
-        name.classList.add("width-80","accordion-header")
 
-        // монеты
-        const copper =document.createElement("span");
-        const silver =document.createElement("span");
-        const gold =document.createElement("span");
-        const platinum =document.createElement("span");
-        const copperText =document.createElement("span");
-        const silverText =document.createElement("span");
-        const goldText =document.createElement("span");
-        const platinumText =document.createElement("span");
+  function render() {
+    const container = document.getElementById("items");
+    container.innerHTML = "";
+    container.className = "accordion";
+    container.id = "charactersAccordion";
+  
+    items.forEach((item, index) => {
+      const accItem = document.createElement("div");
+      accItem.className = "accordion-item";
+  
+      /* HEADER */
+      const header = document.createElement("h2");
+      header.className = "accordion-header";
+      header.id = `heading-${index}`;
+  
+      const button = document.createElement("button");
+      button.className = "accordion-button collapsed";
+      button.type = "button";
+      button.dataset.bsToggle = "collapse";
+      button.dataset.bsTarget = `#collapse-${index}`;
+      button.setAttribute("aria-expanded", "false");
+      button.setAttribute("aria-controls", `collapse-${index}`);
+      button.textContent = item.name;
+  
+      header.appendChild(button);
+  
+      /* COLLAPSE */
+      const collapse = document.createElement("div");
+      collapse.id = `collapse-${index}`;
+      collapse.className = "accordion-collapse collapse";
+      collapse.setAttribute("aria-labelledby", header.id);
+      collapse.dataset.bsParent = "#charactersAccordion";
+  
+      /* BODY */
+      const body = document.createElement("div");
+      body.className = "accordion-body";
+  
+      body.innerHTML = `
+        <p>Медные: ${item.cop}</p>
+        <p>Серебряные: ${item.sil}</p>
+        <p>Золотые: ${item.gol}</p>
+        <p>Платиновые: ${item.pla}</p>
+        <button class="btn btn-danger btn-sm mt-2">Удалить</button>
+      `;
+  
+      body.querySelector("button").onclick = () => {
+        deleteCharacter(item.name);
+      };
+  
+      collapse.appendChild(body);
+  
+      accItem.appendChild(header);
+      accItem.appendChild(collapse);
+      container.appendChild(accItem);
+    });
+  }
 
-        copperText.textContent = `Медные монеты:` 
-        copper.textContent = `${item.cop}`
-        copper.classList.add("ms-3","border") 
-
-        silverText.textContent = `Серебреные монеты:`   
-        silver.textContent = `${item.sil}`
-        silver.classList.add("ms-3","border")
-
-        goldText.textContent = `Золотые монеты:` 
-        gold.textContent = `${item.gol}`
-        gold.classList.add("ms-3","border")
-
-        platinumText.textContent = `Платиновые монеты:` 
-        platinum.textContent = `${item.pla}`   
-        platinum.classList.add("ms-3","border") 
-    
-        // кнопка Удалить
-        const delBtn = document.createElement("button");
-        delBtn.textContent = "Удалить";
-    
-        delBtn.onclick = () => {
-          deleteCharacter(item.name);
-        };
-        delBtn.classList.add("btn", "btn-danger", "btn-sm", "position-absolute", "end-0", "end-5");  //добавить классы
-    
-        // собираем всё вместе
-        nametag.appendChild(delBtn);
-        
-        nametag.appendChild(name);
-        
-        // row.appendChild(text);
-
-        coins.appendChild(copperText);
-        coins.appendChild(copper);
-        coins.appendChild(document.createElement("br"));
-        coins.appendChild(silverText);
-        coins.appendChild(silver);
-        coins.appendChild(document.createElement("br"));
-        coins.appendChild(goldText);
-        coins.appendChild(gold);
-        coins.appendChild(document.createElement("br"));
-        coins.appendChild(platinumText);
-        coins.appendChild(platinum);
-        char.appendChild(nametag);
-        char.appendChild(coins);
-
-        container.appendChild(char);
-      }
-}
 
 // _________________________________constants
 const STORAGE_KEY = "characters";
@@ -134,16 +175,16 @@ const delBTN = document.getElementById("delBTN")
 
 newNameBTN.onclick = () => {
     const name = input.value.trim();
-    if (name === "") return;
+    if (!name) return;
   
-    items.push(createCharacter(name));
+    const item = createCharacter(name);
+    items.push(item);
     saveToStorage();
   
+    document
+      .getElementById("items")
+      .appendChild(createCharacterElement(item));
+  
     input.value = "";
-    render();
 };
 
-// delBTN.onclick=>{
-//     const name = input.value.trim();
-//     items.
-// }
