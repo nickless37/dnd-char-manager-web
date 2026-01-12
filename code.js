@@ -35,7 +35,7 @@ function createCharacterElement(item) {  //---дополнить
     header.classList.add("accordion-header");
   
     const button = document.createElement("button");
-    button.classList.add("accordion-button", "collapsed");
+    button.classList.add("accordion-button", "collapsed","charName",);
     button.setAttribute("data-bs-toggle", "collapse");
     button.setAttribute("data-bs-target", `#collapse-${item.id}`);
     button.textContent = item.name;
@@ -66,12 +66,12 @@ function createCharacterElement(item) {  //---дополнить
       deleteCharacter(item.id);
     };
   
-    updateCharacterView(item);
+    updateCharacterView(item, char);
     return char;
   }
 
-  function updateCharacterView(item) {  //---обновить
-    const char = document.querySelector(`[data-id="${item.id}"]`);
+  function updateCharacterView(item, charElement) {  //---обновить
+    const char = charElement || document.querySelector(`[data-id="${item.id}"]`);
     if (!char) return;
   
     char.querySelector(".cop").textContent = item.cop;
@@ -99,66 +99,10 @@ function init() {  //---рендеринг
     for (const item of items) {
       container.appendChild(createCharacterElement(item));
     }
-  }
+}
 
 
 
-  function render() {
-    const container = document.getElementById("items");
-    container.innerHTML = "";
-    container.className = "accordion";
-    container.id = "charactersAccordion";
-  
-    items.forEach((item, index) => {
-      const accItem = document.createElement("div");
-      accItem.className = "accordion-item";
-  
-      /* HEADER */
-      const header = document.createElement("h2");
-      header.className = "accordion-header";
-      header.id = `heading-${index}`;
-  
-      const button = document.createElement("button");
-      button.className = "accordion-button collapsed";
-      button.type = "button";
-      button.dataset.bsToggle = "collapse";
-      button.dataset.bsTarget = `#collapse-${index}`;
-      button.setAttribute("aria-expanded", "false");
-      button.setAttribute("aria-controls", `collapse-${index}`);
-      button.textContent = item.name;
-  
-      header.appendChild(button);
-  
-      /* COLLAPSE */
-      const collapse = document.createElement("div");
-      collapse.id = `collapse-${index}`;
-      collapse.className = "accordion-collapse collapse";
-      collapse.setAttribute("aria-labelledby", header.id);
-      collapse.dataset.bsParent = "#charactersAccordion";
-  
-      /* BODY */
-      const body = document.createElement("div");
-      body.className = "accordion-body";
-  
-      body.innerHTML = `
-        <p>Медные: ${item.cop}</p>
-        <p>Серебряные: ${item.sil}</p>
-        <p>Золотые: ${item.gol}</p>
-        <p>Платиновые: ${item.pla}</p>
-        <button class="btn btn-danger btn-sm mt-2">Удалить</button>
-      `;
-  
-      body.querySelector("button").onclick = () => {
-        deleteCharacter(item.name);
-      };
-  
-      collapse.appendChild(body);
-  
-      accItem.appendChild(header);
-      accItem.appendChild(collapse);
-      container.appendChild(accItem);
-    });
-  }
 
 
 // _________________________________constants
@@ -166,8 +110,7 @@ const STORAGE_KEY = "characters";
 const input = document.getElementById("newName");
 const newNameBTN = document.getElementById("newNameBTN");
 const items = [];
-    loadFromStorage();
-    render();
+
 const delBTN = document.getElementById("delBTN")
 
 
@@ -188,3 +131,5 @@ newNameBTN.onclick = () => {
     input.value = "";
 };
 
+
+init();

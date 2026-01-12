@@ -12,3 +12,7 @@ body{
     display: flex;
     width: 80%;
 }
+.charName{
+    font-size: large;
+    /* color: yellowgreen; */
+}
