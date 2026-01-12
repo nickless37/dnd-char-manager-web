@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>dnd web char list static</title>
+    <link rel="stylesheet" href="bootstrap-5.3.8-dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="st.css">
+</head>
+<body class="bg-light">
+
+        <template id="item-template">
+            <div class="card item-card">
+                <div class="card-body">
+
+                <h5 class="item-name"></h5>
+
+                <div class="row g-2 item-values"></div>
+
+                <div class="mt-2 d-flex gap-2">
+                    <input type="number" class="form-control amount" value="1">
+                    <button class="btn btn-success add">+</button>
+                    <button class="btn btn-warning sub">−</button>
+                    <button class="btn btn-danger delete">Удалить</button>
+                </div>
+
+                </div>
+            </div>
+        </template>
+
+    
+    <h2>Персонажи</h2>
+
+    <!-- Добавление -->
+    <div class="input-group mb-3">
+      <input id="newName" class="form-control" placeholder="Имя">
+      <button id="newNameBTN" class="btn btn-primary">Добавить</button>
+    </div>
+  
+    <!-- Список -->
+    <div id="items"></div>
+
+    <p id="testingP" class="bg-dark text-light position-absolute end-0 end-5"> papsda</p>
+  
+    
+
+
+    <script src="code.js"></script>
+    <script src="bootstrap/bootstrap.bundle.min.js"></script>
+    <script src="bootstrap-5.3.8-dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

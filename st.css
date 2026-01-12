@@ -1,0 +1,14 @@
+body{
+    margin-left: 15px;
+}
+
+#testingP{
+    width: 100px;
+}
+.end-5{
+    margin-right: 5%;
+}
+.width-80{
+    display: flex;
+    width: 80%;
+}
